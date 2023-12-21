@@ -4,6 +4,7 @@ const app = express()
 const users = require('./usersallsystem');
 const {usersupdate, findusersdata} = require('./mongodbfunc')
 const {decrypt} = require('./crypto')
+const ForgetPassword = require('./public/forgetfrontend');
 
 const port = process.env.PORT || 3000
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
@@ -13,6 +14,10 @@ app.get('/' , (req , res)=>{
    res.send('hello from simple server :)')
 
 })
+
+app.use(express.static('public'));
+
+const forgetPassword = new ForgetPassword("rmtomal", Date.now(), "123456")
 
 app.get('/emailverify', async (req, res)=>{
     const {verify} = req.query;
