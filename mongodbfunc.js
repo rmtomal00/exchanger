@@ -120,6 +120,31 @@ let emailvalidation = function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
+async function getUserDataEmail(email) {
+
+    try {
+
+        const client = await setupdburl.connect();
+        const database =  client.db(dbData.dbname)
+        const coll = database.collection(collection);
+
+        var data = await coll.findOne({email: email})
+
+        
+        //console.log("test");
+        client.close();
+        return JSON.stringify(data);
+        
+    } catch (error) {
+        console.log("test error");
+        return {
+            message: `API error register function`,
+            code: 5002,
+            error: true
+        }
+    }
+    
+}
 
 //userlogin 
 let userlogin = async function usersign_in(email) {
@@ -135,6 +160,33 @@ let userlogin = async function usersign_in(email) {
         }
     
 }
+
+// find and update user password
+ async function updatePassword(mail, passwords) {
+    try {
+
+        const client = await setupdburl.connect();
+        const database =  client.db(dbData.dbname)
+        const coll = database.collection("users");
+        console.log(coll.collectionName);
+
+        var data = await coll.findOneAndUpdate({email: mail}, {$set: {password: passwords}})
+        console.log(data);
+
+        
+        console.log("test");
+        client.close();
+        return JSON.stringify(data);
+        
+    } catch (error) {
+        console.log("test error");
+        return {
+            message: `API error register function`,
+            code: 5002,
+            error: true
+        }
+    }
+}
 module.exports = {
     userRegister, 
     usercheck,
@@ -142,4 +194,6 @@ module.exports = {
     usersupdate,
     findusersdata,
     userlogin,
+    getUserDataEmail,
+    updatePassword,
 }

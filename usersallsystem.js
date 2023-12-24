@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { userRegister, usercheck, emailvalidation, userlogin} = require('./mongodbfunc');
+const { userRegister, usercheck, emailvalidation, userlogin, updatePassword,} = require('./mongodbfunc');
 const userModel = require('./usermodel');
 const {encrypt, decrypt} = require('./crypto');
 const { emailsend } = require('./sendmailer')
@@ -114,7 +114,8 @@ router.all('/login', async (req, res)=>{
             res.json({
                 error: false,
                 code: 2002,
-                message: "Login successfully"
+                message: "Login successfully",
+                userdata: user
             })
         }else{
 
@@ -138,6 +139,36 @@ router.all('/login', async (req, res)=>{
         message: "Wrong format of password or email"
         })
    }
+})
+
+
+router.post('/resetpassword', async (req, res)=>{
+    const {email, password} = req.query;
+    const checkEmail = emailvalidation(email);
+    //console.log(checkEmail);
+    const encryptpassword = encrypt(password);
+    console.log(encryptpassword);
+    if (checkEmail) {
+        if (email && password ) {
+
+            const updateRes = updatePassword(email, encryptpassword);
+            res.json(updateRes);
+            
+        }else{
+            res.json({
+                error: true,
+                code: 5014,
+                message: "invalid email or password"
+            })
+        }
+    }else{
+        res.json({
+            error: true,
+            code: 5015,
+            message: "invalid email",
+        })
+    }
+
 })
 
 
